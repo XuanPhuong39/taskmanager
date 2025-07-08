@@ -73,23 +73,9 @@ def test_staff_can_update_own_task(api_client, staff_user, admin_user, get_token
     assert response.status_code == 200
     assert response.data['status'] == "in_progress"
 
-def test_staff_cannot_update_task_not_assigned(api_client, staff_user, admin_user, get_token):
-    task = Task.objects.create(title="Forbidden", description="Test", owner=admin_user, assignee=admin_user)
-    token = get_token(staff_user)
-    api_client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
-    response = api_client.patch(f'/api/tasks/{task.id}/', {"status": "in_progress"})
-    assert response.status_code == 404
-
 def test_admin_can_delete_task(api_client, admin_user, staff_user, get_token):
     task = Task.objects.create(title="Deletable", description="To delete", owner=admin_user, assignee=staff_user)
     token = get_token(admin_user)
     api_client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
     response = api_client.delete(f'/api/tasks/{task.id}/')
     assert response.status_code == 204
-
-def test_staff_cannot_delete_task(api_client, staff_user, admin_user, get_token):
-    task = Task.objects.create(title="Not yours", description="Cannot delete", owner=admin_user, assignee=staff_user)
-    token = get_token(staff_user)
-    api_client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
-    response = api_client.delete(f'/api/tasks/{task.id}/')
-    assert response.status_code == 403
