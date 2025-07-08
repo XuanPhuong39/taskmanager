@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: taskdb
+      POSTGRES_USER: taskuser
+      POSTGRES_PASSWORD: taskpass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:alpine
+
+  worker:
+    build: .
+    command: celery -A config worker --loglevel=info
+    depends_on:
+      - web
+      - redis
+
+  beat:
+    build: .
+    command: celery -A config beat --loglevel=info
+    depends_on:
+      - web
+      - redis
+
+volumes:
+  postgres_data:
