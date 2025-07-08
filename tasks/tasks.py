@@ -29,12 +29,12 @@ def send_task_notification_email(task_id):
 
 @shared_task
 def send_task_reminders():
-    today = timezone.now().date()
-    tomorrow = today + timedelta(days=1)
+    now = timezone.now()
+    deadline = now + timedelta(hours=24)
 
     tasks = Task.objects.filter(
-        due_date__gte=today,
-        due_date__lte=tomorrow,
+        due_date__gte=now,
+        due_date__lte=deadline,
         status__in=['pending', 'in_progress']
     )
     for task in tasks:
