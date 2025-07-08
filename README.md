@@ -26,7 +26,7 @@ Hệ thống quản lý công việc sử dụng Django REST Framework, JWT, Cel
 ### 1. Clone và build bằng Docker
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/XuanPhuong39/taskmanager
 cd taskmanager
 docker compose up -d --build
 ```
