@@ -171,3 +171,15 @@ def test_delete_nonexistent_task(api_client, admin_user, get_token):
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
     response = api_client.delete('/api/tasks/123456/')
     assert response.status_code == 404
+import pytest
+from rest_framework import status
+
+@pytest.mark.django_db
+def test_stats_forbidden_for_staff(api_client, staff_user, get_token):
+    token = get_token(staff_user)
+    api_client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+
+    response = api_client.get('/api/stats/')
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert 'detail' in response.data
